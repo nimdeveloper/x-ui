@@ -1,0 +1,48 @@
+{{define "mirrorModal"}}
+<a-modal id="mirror-modal" v-model="mirrorModal.visible" :title="mirrorModal.title" @ok="mirrorModal.ok"
+         :confirm-loading="mirrorModal.confirmLoading" :closable="true" :mask-closable="false"
+         :ok-text="mirrorModal.okText" cancel-text='{{ i18n "close" }}'>
+
+
+<!--  {{template "form/inbound"}}-->
+dtfhjdhdhdhd
+
+</a-modal>
+<script>
+
+  const mirrorModal = {
+    title: 'add mirror',
+    visible: false,
+    confirmLoading: false,
+    okText: '{{ i18n "sure" }}',
+    confirm: null,
+    ok() {
+      ObjectUtil.execute(mirrorModal.confirm);
+    },
+    show({ title='', okText='{{ i18n "sure" }}'}) {
+      this.title = title;
+      this.okText = okText;
+      this.confirm = confirm;
+      this.visible = true;
+    },
+    close() {
+      mirrorModal.visible = false;
+      mirrorModal.loading(false);
+    },
+    loading(loading) {
+      mirrorModal.confirmLoading = loading;
+    },
+  };
+
+
+  new Vue({
+    delimiters: ['[[', ']]'],
+    el: '#mirror-modal',
+    data: {
+      mirrorModal: mirrorModal
+    },
+    methods: {},
+  });
+
+</script>
+{{end}}
