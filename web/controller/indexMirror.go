@@ -17,7 +17,7 @@ func NewMirrorIndexController(g *gin.RouterGroup) *MirrorIndexController {
 }
 
 func (a *MirrorIndexController) initRouter(g *gin.RouterGroup) {
-	g.GET("/mirrors", a.getAllMirrors)
+	g.GET("/api/mirrors", a.getAllMirrors)
 }
 
 func (a *MirrorIndexController) getAllMirrors(c *gin.Context) {

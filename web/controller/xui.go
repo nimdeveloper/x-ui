@@ -20,6 +20,9 @@ func NewXUIController(g *gin.RouterGroup) *XUIController {
 }
 
 func (a *XUIController) initRouter(g *gin.RouterGroup) {
+	a.mirrorIndexController = NewMirrorIndexController(g)
+	a.mirrorStoreController = NewStoreMirrorController(g)
+
 	g = g.Group("/xui")
 	g.Use(a.checkLogin)
 
@@ -29,8 +32,6 @@ func (a *XUIController) initRouter(g *gin.RouterGroup) {
 
 	a.inboundController = NewInboundController(g)
 	a.settingController = NewSettingController(g)
-	a.mirrorIndexController = NewMirrorIndexController(g)
-	a.mirrorStoreController = NewStoreMirrorController(g)
 }
 
 func (a *XUIController) index(c *gin.Context) {

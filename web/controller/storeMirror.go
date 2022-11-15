@@ -19,7 +19,7 @@ func NewStoreMirrorController(g *gin.RouterGroup) *MirrorStoreController {
 }
 
 func (a *MirrorStoreController) initRouter(g *gin.RouterGroup) {
-	g.POST("/mirrors", a.storeMirror)
+	g.POST("/api/mirrors", a.storeMirror)
 }
 
 func (a *MirrorStoreController) storeMirror(c *gin.Context) {
