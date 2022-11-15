@@ -44,6 +44,10 @@ func initInboundClientIps() error {
 	return db.AutoMigrate(&model.InboundClientIps{})
 }
 
+func initMirrors() error {
+	return db.AutoMigrate(&model.Mirror{})
+}
+
 func InitDB(dbPath string) error {
 	dir := path.Dir(dbPath)
 	err := os.MkdirAll(dir, fs.ModeDir)
@@ -80,6 +84,10 @@ func InitDB(dbPath string) error {
 		return err
 	}
 	err = initInboundClientIps()
+	if err != nil {
+		return err
+	}
+	err = initMirrors()
 	if err != nil {
 		return err
 	}

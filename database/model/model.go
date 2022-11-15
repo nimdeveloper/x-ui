@@ -43,9 +43,9 @@ type Inbound struct {
 	Sniffing       string   `json:"sniffing" form:"sniffing"`
 }
 type InboundClientIps struct {
-	Id       int    `json:"id" gorm:"primaryKey;autoIncrement"`
+	Id          int    `json:"id" gorm:"primaryKey;autoIncrement"`
 	ClientEmail string `json:"clientEmail" form:"clientEmail" gorm:"unique"`
-	Ips string `json:"ips" form:"ips"`
+	Ips         string `json:"ips" form:"ips"`
 }
 
 func (i *Inbound) GenXrayInboundConfig() *xray.InboundConfig {
@@ -72,7 +72,13 @@ type Setting struct {
 type Client struct {
 	ID       string `json:"id"`
 	AlterIds uint16 `json:"alterId"`
-	Email string `json:"email"`
-	LimitIP int `json:"limitIp"`
+	Email    string `json:"email"`
+	LimitIP  int    `json:"limitIp"`
 	Security string `json:"security"`
+}
+
+type Mirror struct {
+	Id   int    `json:"id" gorm:"primaryKey;autoIncrement"`
+	Ip   string `json:"ip"`
+	Port int    `json:"port"`
 }

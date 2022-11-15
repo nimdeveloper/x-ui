@@ -7,8 +7,10 @@ import (
 type XUIController struct {
 	BaseController
 
-	inboundController *InboundController
-	settingController *SettingController
+	inboundController     *InboundController
+	settingController     *SettingController
+	mirrorIndexController *MirrorIndexController
+	mirrorStoreController *MirrorStoreController
 }
 
 func NewXUIController(g *gin.RouterGroup) *XUIController {
@@ -18,6 +20,9 @@ func NewXUIController(g *gin.RouterGroup) *XUIController {
 }
 
 func (a *XUIController) initRouter(g *gin.RouterGroup) {
+	a.mirrorIndexController = NewMirrorIndexController(g)
+	a.mirrorStoreController = NewStoreMirrorController(g)
+
 	g = g.Group("/xui")
 	g.Use(a.checkLogin)
 
