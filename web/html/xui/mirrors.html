@@ -64,7 +64,7 @@
                 this.spinning = spinning;
             },
             async getMirrors() {
-                // this.loading();
+                this.loading();
                 // const msg = await HttpUtil.post('/xui/inbound/list');
                 this.loading(false);
                 // if (!msg.success) {
@@ -91,9 +91,14 @@
                     },
                 });
             },
-            async addMirror() {
-                const data = {};
-            },
+            async addMirror(ip,port) {
+                const data = {
+                    ip:ip,
+                    port:port
+                };
+                await this.submit('/api/inbound/add', data, inModal);
+
+                },
             async submit(url, data, modal) {
                 const msg = await HttpUtil.postWithModal(url, data, modal);
                 if (msg.success) {

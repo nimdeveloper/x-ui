@@ -1,11 +1,23 @@
 {{define "mirrorModal"}}
+
+<style>
+  .ant-form{
+    display: flex;
+  }
+
+  .ant-form-item{
+    display: flex!important;
+  }
+
+
+</style>
+
 <a-modal id="mirror-modal" v-model="mirrorModal.visible" :title="mirrorModal.title" @ok="mirrorModal.ok"
          :confirm-loading="mirrorModal.confirmLoading" :closable="true" :mask-closable="false"
          :ok-text="mirrorModal.okText" cancel-text='{{ i18n "close" }}'>
 
 
-<!--  {{template "form/inbound"}}-->
-dtfhjdhdhdhd
+  {{template "form/mirrorForm"}}
 
 </a-modal>
 <script>
