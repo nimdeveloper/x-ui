@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"x-ui/database/model"
-	requestBody2 "x-ui/web/requestBody"
+	requestBody "x-ui/web/request_body"
 	"x-ui/web/service/mirror"
 )
 
@@ -23,8 +23,8 @@ func (a *MirrorStoreController) initRouter(g *gin.RouterGroup) {
 }
 
 func (a *MirrorStoreController) storeMirror(c *gin.Context) {
-	var requestBody requestBody2.StoreMirrorRequestBody
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
+	var body requestBody.StoreMirrorRequestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"error": err.Error(),
 		})
@@ -32,8 +32,8 @@ func (a *MirrorStoreController) storeMirror(c *gin.Context) {
 	}
 
 	m := model.Mirror{
-		Ip:   requestBody.Ip,
-		Port: requestBody.Port,
+		Ip:   body.Ip,
+		Port: body.Port,
 	}
 	err := a.storeMirrorService.SaveMirror(&m)
 	if err != nil {
