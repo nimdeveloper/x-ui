@@ -27,7 +27,8 @@
 
     <template v-if="qrModal.inbound.protocol === Protocols.VMESS"
               v-for="(vmess, index) in qrModal.inbound.settings.vmesses">
-        <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;" v-text="vmess.email"></a-tag>
+        <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;"  v-text="vmess.email"></a-tag>
+        <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;"  v-text="vmess.id"></a-tag>
         <canvas @click="copyTextToClipboard(`qrCode-vmess-${vmess.id}`,index)"
                 :id="`qrCode-vmess-${vmess.id}`" style="width: 100%; height: 100%;"></canvas>
         <a-divider style="height: 2px; background-color: #7e7e7e"/>
@@ -36,6 +37,8 @@
     <template v-if="qrModal.inbound.protocol === Protocols.VLESS"
               v-for="(vless, index) in qrModal.inbound.settings.vlesses">
         <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;" v-text="vless.email"></a-tag>
+        <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;" v-text="vless.id"></a-tag>
+
         <canvas @click="copyTextToClipboard(`qrCode-vless-${vless.id}`,index)" :id="`qrCode-vless-${vless.id}`"
                 style="width: 100%; height: 100%;"></canvas>
         <a-divider style="height: 2px; background-color: #7e7e7e"/>
@@ -133,7 +136,7 @@
                     }
                 }
             },
-            updated() {
+            createQrAndLink() {
                 switch (qrModal.inbound.protocol) {
                     case Protocols.VMESS:
                         vmesses = qrModal.inbound.settings.vmesses
@@ -159,15 +162,14 @@
                 immediate: true,
 
                 handler(newQuestion) {
-                    if(newQuestion===undefined){
-                        this.selectedMirror=qrModal.dbInbound.address
+                    if (newQuestion === undefined) {
+                        this.selectedMirror = qrModal.dbInbound.address
                     }
-                    console.log(newQuestion)
-                    this.updated()
+                    this.createQrAndLink()
                 }
             }
         },
-        updated() {
+        updated(){
             switch (qrModal.inbound.protocol) {
                 case Protocols.VMESS:
                     vmesses = qrModal.inbound.settings.vmesses
@@ -185,6 +187,7 @@
                 default:
                     return null;
             }
+
         }
 
 
