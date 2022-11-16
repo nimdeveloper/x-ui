@@ -28,6 +28,7 @@ func NewInboundController(g *gin.RouterGroup) *InboundController {
 func (a *InboundController) initRouter(g *gin.RouterGroup) {
 	g = g.Group("/inbound")
 
+	g.GET("/:id", a.showInbound)
 	g.POST("/list", a.getInbounds)
 	g.POST("/add", a.addInbound)
 	g.POST("/del/:id", a.delInbound)
@@ -61,6 +62,31 @@ func (a *InboundController) getInbounds(c *gin.Context) {
 	jsonObj(c, inbounds, nil)
 }
 
+func (a *InboundController) showInbound(c *gin.Context) {
+	user := session.GetLoginUser(c)
+	type RequestUri struct {
+		Id int `uri:"id"`
+	}
+	var requestUri RequestUri
+
+	if err := c.ShouldBindUri(&requestUri); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
+		return
+	}
+
+	inbound, err := a.inboundService.GetUserInbound(user.Id, requestUri.Id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.ErrorResponse{
+			ErrorMessage: "Inbound not found",
+		})
+	}
+
+	c.JSON(http.StatusOK, response.InboundResponseFromInbound(*inbound))
+}
+
 func (a *InboundController) addInbound(c *gin.Context) {
 	inbound := &model.Inbound{}
 	err := c.ShouldBind(inbound)
@@ -76,8 +102,7 @@ func (a *InboundController) addInbound(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"error":  err.Error(),
-			"status": http.StatusUnprocessableEntity,
+			"error": err.Error(),
 		})
 		return
 	}

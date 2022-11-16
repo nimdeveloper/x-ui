@@ -24,6 +24,16 @@ func (s *InboundService) GetInbounds(userId int) ([]*model.Inbound, error) {
 	return inbounds, nil
 }
 
+func (s *InboundService) GetUserInbound(userId int, inboundId int) (*model.Inbound, error) {
+	db := database.GetDB()
+	inbound := &model.Inbound{}
+	err := db.Model(model.Inbound{}).Where("user_id = ?", userId).First(inbound, inboundId).Error
+	if err != nil {
+		return nil, err
+	}
+	return inbound, nil
+}
+
 func (s *InboundService) GetAllInbounds() ([]*model.Inbound, error) {
 	db := database.GetDB()
 	var inbounds []*model.Inbound
@@ -186,14 +196,13 @@ func (s *InboundService) GetInboundClientIps(clientEmail string) (string, error)
 	}
 	return InboundClientIps.Ips, nil
 }
-func (s *InboundService) ClearClientIps(clientEmail string) (error) {
+func (s *InboundService) ClearClientIps(clientEmail string) error {
 	db := database.GetDB()
 
 	result := db.Model(model.InboundClientIps{}).
 		Where("client_email = ?", clientEmail).
 		Update("ips", "")
 	err := result.Error
-
 
 	if err != nil {
 		return err
