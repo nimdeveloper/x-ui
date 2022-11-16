@@ -5,6 +5,15 @@
     {{template "form/inbound"}}
 </a-modal>
 <script>
+    const protocols = {
+        VMESS: Protocols.VMESS,
+        VLESS: Protocols.VLESS,
+        TROJAN: Protocols.TROJAN,
+        SHADOWSOCKS: Protocols.SHADOWSOCKS,
+        DOKODEMO: Protocols.DOKODEMO,
+        SOCKS: Protocols.SOCKS,
+        HTTP: Protocols.HTTP,
+    };
 
     const inModal = {
         title: '',
@@ -19,9 +28,10 @@
             ObjectUtil.execute(inModal.confirm, inModal.inbound, inModal.dbInbound);
         },
         show({ title='', okText='{{ i18n "sure" }}',
-                 inbound=null, dbInbound=null,
+                 inbound=null,
+                 dbInbound=null,
                  confirm=(inbound, dbInbound)=>{},
-                 isEdit=false  }) {
+                 isEdit=false}) {
             this.title = title;
             this.okText = okText;
             if (inbound) {
@@ -47,15 +57,6 @@
         },
     };
 
-    const protocols = {
-        VMESS: Protocols.VMESS,
-        VLESS: Protocols.VLESS,
-        TROJAN: Protocols.TROJAN,
-        SHADOWSOCKS: Protocols.SHADOWSOCKS,
-        DOKODEMO: Protocols.DOKODEMO,
-        SOCKS: Protocols.SOCKS,
-        HTTP: Protocols.HTTP,
-    };
 
     new Vue({
         delimiters: ['[[', ']]'],

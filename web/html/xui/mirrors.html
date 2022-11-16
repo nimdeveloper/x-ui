@@ -23,8 +23,8 @@
                         <div slot="title">
                             <a-button type="primary" icon="plus" @click="openAddMirror"></a-button>
                         </div>
-                        <a-table :columns="columns" :row-key="dbMirrors => dbMirrors.id"
-                                 :data-source="dbMirrors"
+                        <a-table :columns="columns" :row-key="mirror => mirror.id"
+                                 :data-source="mirrors"
                                  :loading="spinning" :scroll="{ x: 1500 }"
                                  :pagination="false"
                                  style="margin-top: 20px"
@@ -39,16 +39,15 @@
 {{template "js" .}}
 <script>
 
-    const columns = [ {
+    const columns = [{
         title: "ip",
         align: 'center',
         dataIndex: "ip",
-        width: 30,
-    }, {
+        width: 30}, {
         title: 'port',
         align: 'center',
         dataIndex: "port",
-        width: 60,
+        width: 60
     }];
     const app = new Vue({
         delimiters: ['[[', ']]'],
@@ -56,8 +55,7 @@
         data: {
             siderDrawer,
             spinning: false,
-            mirrors: [],
-            dbMirrors: []
+            mirrors: []
         },
         methods: {
             loading(spinning = true) {
@@ -65,18 +63,19 @@
             },
             async getMirrors() {
                 this.loading();
-                // const msg = await HttpUtil.post('/xui/inbound/list');
+                const msg = await HttpUtil.get('/api/mirrors');
                 this.loading(false);
-                // if (!msg.success) {
-                //     return;
-                // }
-                this.setMirrors([{ip:'192.168.1.10',port:'8080',id:1}]);
+                if (msg.status !== 200) {
+                    return;
+                }
+                this.setMirrors(msg.data);
             },
             setMirrors(mirrors) {
                 for (const mirror of mirrors) {
-                    const dbMirror = new Mirror({port: mirror.port,ip:mirror.ip,id:mirror.id});
-                    this.mirrors.push(dbMirror);
-                    this.dbMirrors.push(dbMirror);
+                    if(this.mirrors.find((e)=>e.id===mirror.id)===undefined) {
+                        const dbMirror = new Mirror({port: mirror.port, ip: mirror.ip, id: mirror.id});
+                        this.mirrors.push(dbMirror);
+                    }
                 }
             },
             openAddMirror() {
@@ -84,24 +83,25 @@
                     title: 'add mirror',
                     okText: 'add',
                     cancelText: '{{ i18n "close" }}',
-                    confirm: async () => {
+                    confirm: async (mirror) => {
                         mirrorModal.loading();
-                        await this.addMirror();
+                        await this.addMirror(mirror);
                         mirrorModal.close();
                     },
                 });
             },
-            async addMirror(ip,port) {
-                const data = {
-                    ip:ip,
-                    port:port
-                };
-                await this.submit('/api/inbound/add', data, inModal);
+            async addMirror(mirror) {
 
-                },
+                const data = Object.assign({
+                    ip: mirror.ip.toString(),
+                    port: parseInt(mirror.port)
+                })
+                await this.submit('/api/mirrors', data, mirrorModal);
+
+            },
             async submit(url, data, modal) {
-                const msg = await HttpUtil.postWithModal(url, data, modal);
-                if (msg.success) {
+                const msg = await HttpUtil.postWithModal(url, JSON.parse(JSON.stringify(data)), modal,{headers: {'Content-Type': 'application/json'}});
+                if (msg.status === 200) {
                     await this.getMirrors();
                 }
             },

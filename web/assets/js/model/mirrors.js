@@ -1,20 +1,10 @@
 class Mirror {
-    constructor(data) {
+    constructor(data={ip:"",port:"",id:-1}) {
         this.ip=data.ip;
         this.port=data.port;
         this.id=data.id;
-
     }
 
 
 }
-class DBMirror {
-    constructor(data) {
-        this.ip=data.ip;
-        this.port=data.port;
-        this.id=data.id;
 
-    }
-
-
-}
