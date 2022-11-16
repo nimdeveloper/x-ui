@@ -1,4 +1,4 @@
-package requestBody
+package request_body
 
 type StoreMirrorRequestBody struct {
 	Ip   string `json:"ip" binding:"required,ipv4"`
