@@ -45,6 +45,12 @@
     <p>{{ i18n "protocol"}}: <a-tag color="green">[[ dbInbound.protocol ]]</a-tag></p>
     <p>{{ i18n "pages.inbounds.address"}}: <a-tag color="blue">[[ dbInbound.address ]]</a-tag></p>
     <p>{{ i18n "pages.inbounds.port"}}: <a-tag color="green">[[ dbInbound.port ]]</a-tag></p>
+    <a-divider></a-divider>
+
+    <template v-if="dbInbound.isVMess || dbInbound.isVLess || dbInbound.isTrojan || dbInbound.isSS">
+    {{template "inboundInfoStream"}}
+        <a-divider style="height: 2px; background-color: #7e7e7e" />
+    </template>
 
     <template v-if="dbInbound.isVMess" v-for="(vmess, index) in inbound.settings.vmesses">
         <p>uuid: <a-tag color="green">[[ vmess.id ]]</a-tag></p>
@@ -77,9 +83,7 @@
         <p>{{ i18n "password"}}: <a-tag color="green">[[ inbound.password ]]</a-tag></p>
     </template>
 
-    <template v-if="dbInbound.isVMess || dbInbound.isVLess || dbInbound.isTrojan || dbInbound.isSS">
-        {{template "inboundInfoStream"}}
-    </template>
+
 </div>
 {{end}}
 

@@ -42,7 +42,6 @@ class HttpUtil {
 
     static async post(url, data, options) {
         let msg;
-        console.log('pp',data)
         try {
             const resp = await axios.post(url, data, options);
             msg = this._respToMsg(resp);

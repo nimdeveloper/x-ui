@@ -1,7 +1,8 @@
 {{define "qrcodeModal"}}
-<a-modal id="qrcode-modal" v-model="qrModal.visible" :title="qrModal.title"
+<a-modal type="grid" id="qrcode-modal" v-model="qrModal.visible" :title="qrModal.title"
          :closable="true" width="300px" :ok-text="qrModal.okText"
          cancel-text='{{ i18n "close" }}' :ok-button-props="{attrs:{id:'qr-modal-ok-btn'}}">
+
     <div style="display: flex;flex-direction: row; gap: 5px">
         <a-tree-select
                 v-model:value="selectedMirror"
@@ -33,7 +34,6 @@
                 :id="`qrCode-vmess-${vmess.id}`" style="width: 100%; height: 100%;"></canvas>
         <a-divider style="height: 2px; background-color: #7e7e7e"/>
     </template>
-
     <template v-if="qrModal.inbound.protocol === Protocols.VLESS"
               v-for="(vless, index) in qrModal.inbound.settings.vlesses">
         <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;" v-text="vless.email"></a-tag>

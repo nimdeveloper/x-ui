@@ -12,7 +12,7 @@
 
 
 <a-menu-item key="{{ .base_path }}xui/mirrors">
-    <a-icon type="user"></a-icon>
+    <a-icon type="link"></a-icon>
     <span>mirrors</span>
 </a-menu-item>
 
@@ -28,17 +28,6 @@
 
 
 
-<!--<a-sub-menu>-->
-<!--    <template slot="title">-->
-<!--        <span>Lng</span>-->
-<!--    </template>-->
-<!--    <a-menu-item @click="reload('fa')" key="#">-->
-<!--        <span >persian</span>-->
-<!--    </a-menu-item>-->
-<!--    <a-menu-item @click="reload('en')" key="#">-->
-<!--        <span>english</span>-->
-<!--    </a-menu-item>-->
-<!--</a-sub-menu>-->
 
 
 <a-menu-item key="{{ .base_path }}logout">
@@ -68,24 +57,6 @@
 </a-drawer>
 <script>
 
-    if(getCookie('lang')==='fa'){
-        document.body.lang='fa'
-    }
-    function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for(let i = 0; i <ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
     async function reload(ln) {
         document.cookie = "lang="+ln;
         if(ln==='fa'){
