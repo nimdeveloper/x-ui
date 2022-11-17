@@ -28,7 +28,7 @@ func NewInboundController(g *gin.RouterGroup) *InboundController {
 func (a *InboundController) initRouter(g *gin.RouterGroup) {
 	g = g.Group("/inbound")
 
-	g.GET("/:id", a.showInbound)
+	g.GET("/:id", a.getInbound)
 	g.POST("/list", a.getInbounds)
 	g.POST("/add", a.addInbound)
 	g.POST("/del/:id", a.delInbound)
@@ -62,7 +62,7 @@ func (a *InboundController) getInbounds(c *gin.Context) {
 	jsonObj(c, inbounds, nil)
 }
 
-func (a *InboundController) showInbound(c *gin.Context) {
+func (a *InboundController) getInbound(c *gin.Context) {
 	user := session.GetLoginUser(c)
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -95,7 +95,7 @@ func (a *InboundController) addInbound(c *gin.Context) {
 	inbound.UserId = user.Id
 	inbound.Enable = true
 	inbound.Tag = fmt.Sprintf("inbound-%v", inbound.Port)
-	err = a.inboundService.AddInbound(inbound)
+	inbound, err = a.inboundService.AddInbound(inbound)
 
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -115,7 +115,7 @@ func (a *InboundController) delInbound(c *gin.Context) {
 		return
 	}
 	err = a.inboundService.DelInbound(id)
-	jsonMsgObj(c, I18n(c , "delete"), id, err)
+	jsonMsgObj(c, I18n(c, "delete"), id, err)
 	if err == nil {
 		a.xrayService.SetToNeedRestart()
 	}
@@ -136,7 +136,7 @@ func (a *InboundController) updateInbound(c *gin.Context) {
 		return
 	}
 	inbound, err = a.inboundService.UpdateInbound(inbound)
-	jsonMsgObj(c, I18n(c , "pages.inbounds.revise"), inbound, err)
+	jsonMsgObj(c, I18n(c, "pages.inbounds.revise"), inbound, err)
 	if err == nil {
 		a.xrayService.SetToNeedRestart()
 	}
