@@ -173,3 +173,6 @@
 
 [api.inbound]
 "removeInboundSuccessMessage" = "Removed inbound successfully"
+
+[api.auth]
+"unauthorizedMessage" = "You are unauthenticated"
