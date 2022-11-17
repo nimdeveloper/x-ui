@@ -3,6 +3,9 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
+	_ "github.com/samber/lo"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 	"x-ui/database/model"
@@ -26,13 +29,13 @@ func NewInboundController(g *gin.RouterGroup) *InboundController {
 }
 
 func (a *InboundController) initRouter(g *gin.RouterGroup) {
-	g = g.Group("/inbound")
+	g = g.Group("/inbounds")
 
-	g.GET("/:id", a.getInbound)
-	g.POST("/list", a.getInbounds)
-	g.POST("/add", a.addInbound)
-	g.POST("/del/:id", a.delInbound)
-	g.POST("/update/:id", a.updateInbound)
+	g.GET(":id", a.getInbound)
+	g.GET("", a.getInbounds)
+	g.POST("", a.addInbound)
+	g.DELETE(":id", a.deleteInbound)
+	g.PUT(":id", a.updateInbound)
 
 	g.POST("/clientIps/:email", a.getClientIps)
 	g.POST("/clearClientIps/:email", a.clearClientIps)
@@ -56,10 +59,16 @@ func (a *InboundController) getInbounds(c *gin.Context) {
 	user := session.GetLoginUser(c)
 	inbounds, err := a.inboundService.GetInbounds(user.Id)
 	if err != nil {
-		jsonMsg(c, I18n(c, "pages.inbounds.toasts.obtain"), err)
-		return
+		c.JSON(http.StatusInternalServerError, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
 	}
-	jsonObj(c, inbounds, nil)
+
+	c.JSON(http.StatusOK, response.ListResponse[response.InboundResponse]{
+		Data: lo.Map[*model.Inbound, *response.InboundResponse](inbounds, func(item *model.Inbound, _ int) *response.InboundResponse {
+			return response.InboundResponseFromInbound(*item)
+		}),
+	})
 }
 
 func (a *InboundController) getInbound(c *gin.Context) {
@@ -88,9 +97,12 @@ func (a *InboundController) addInbound(c *gin.Context) {
 	inbound := &model.Inbound{}
 	err := c.ShouldBind(inbound)
 	if err != nil {
-		jsonMsg(c, I18n(c, "pages.inbounds.addTo"), err)
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
 		return
 	}
+
 	user := session.GetLoginUser(c)
 	inbound.UserId = user.Id
 	inbound.Enable = true
@@ -98,8 +110,8 @@ func (a *InboundController) addInbound(c *gin.Context) {
 	inbound, err = a.inboundService.AddInbound(inbound)
 
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"error": err.Error(),
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
 		})
 		return
 	}
@@ -108,39 +120,68 @@ func (a *InboundController) addInbound(c *gin.Context) {
 	a.xrayService.SetToNeedRestart()
 }
 
-func (a *InboundController) delInbound(c *gin.Context) {
+func (a *InboundController) deleteInbound(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		jsonMsg(c, I18n(c, "delete"), err)
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
 		return
 	}
+
 	err = a.inboundService.DelInbound(id)
-	jsonMsgObj(c, I18n(c, "delete"), id, err)
-	if err == nil {
-		a.xrayService.SetToNeedRestart()
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
+		return
 	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		SuccessMessage: I18n(c, "api.inbound.removeInboundSuccessMessage"),
+	})
+	a.xrayService.SetToNeedRestart()
 }
 
 func (a *InboundController) updateInbound(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		jsonMsg(c, I18n(c, "pages.inbounds.revise"), err)
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
 		return
 	}
+
 	inbound := &model.Inbound{
 		Id: id,
 	}
 	err = c.ShouldBind(inbound)
 	if err != nil {
-		jsonMsg(c, I18n(c, "pages.inbounds.revise"), err)
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
 		return
 	}
+
 	inbound, err = a.inboundService.UpdateInbound(inbound)
-	jsonMsgObj(c, I18n(c, "pages.inbounds.revise"), inbound, err)
-	if err == nil {
-		a.xrayService.SetToNeedRestart()
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, response.ErrorResponse{
+				ErrorMessage: err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
+		return
 	}
+
+	c.JSON(http.StatusOK, response.InboundResponseFromInbound(*inbound))
+	a.xrayService.SetToNeedRestart()
 }
+
 func (a *InboundController) getClientIps(c *gin.Context) {
 	email := c.Param("email")
 
@@ -151,6 +192,7 @@ func (a *InboundController) getClientIps(c *gin.Context) {
 	}
 	jsonObj(c, ips, nil)
 }
+
 func (a *InboundController) clearClientIps(c *gin.Context) {
 	email := c.Param("email")
 

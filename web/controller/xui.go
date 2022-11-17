@@ -7,7 +7,6 @@ import (
 type XUIController struct {
 	BaseController
 
-	inboundController     *InboundController
 	settingController     *SettingController
 	mirrorIndexController *MirrorIndexController
 	mirrorStoreController *MirrorStoreController
@@ -30,7 +29,6 @@ func (a *XUIController) initRouter(g *gin.RouterGroup) {
 	g.GET("/inbounds", a.inbounds)
 	g.GET("/setting", a.setting)
 
-	a.inboundController = NewInboundController(g)
 	a.settingController = NewSettingController(g)
 }
 
