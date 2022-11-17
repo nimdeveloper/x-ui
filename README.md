@@ -5,8 +5,10 @@ xray panel supporting multi-protocol, **Multi-lang (English,Chinese)**, **IP Res
 | Features        | Enable?           |
 | ------------- |:-------------:|
 | Multi-lang | :heavy_check_mark: |
-| IP Restriction | :heavy_check_mark: |
-| Inbound Multi User | :heavy_check_mark: |
+| [IP Restriction](https://github.com/hossinasaadi/x-ui/#enable-ip-restrictions-per-inbound) | :heavy_check_mark: |
+| [Inbound Multi User](https://github.com/hossinasaadi/x-ui/#enable-multi-user-traffic--exprire-day) | :heavy_check_mark: |
+| [Multi User Traffic & expire day](https://github.com/hossinasaadi/x-ui/#enable-multi-user-traffic--exprire-day) | :heavy_check_mark: |
+| [REST API](https://github.com/hossinasaadi/x-ui/pull/51) | :heavy_check_mark: |
 
 **If you think this project is helpful to you, you may wish to give a** :star2: 
 
@@ -46,6 +48,45 @@ ETH: 0x256ddA590c35638fA4B3a25Ec4544Db087ceE826
 
 2 - add **IP limit and Unique Email** for inbound(vmess & vless)
 
+# Enable Multi User Traffic & Exprire Day
+![Screenshot from 2022-11-15 07-43-58](https://user-images.githubusercontent.com/16622377/201922652-111ff5b8-272b-49f5-a656-d6f57d79eaed.png)
+
+**for enable traffic for users you should do :**
+
+find this in config : 
+``` json
+ "policy": {
+    "system": {
+```
+**and add this just after  ` "policy": {` :**
+```json
+    "levels": {
+      "0": {
+        "statsUserUplink": true,
+        "statsUserDownlink": true
+      }
+    },
+```
+
+
+**the final output is like :**
+```json
+  "policy": {
+    "levels": {
+      "0": {
+        "statsUserUplink": true,
+        "statsUserDownlink": true
+      }
+    },
+
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
+  "routing": {
+```
+ restart panel
 # Install & Upgrade
 
 ```
@@ -74,7 +115,7 @@ systemctl restart x-ui
 
 ## Install using docker
 
-> This docker tutorial and docker image are provided by [Chasing66](https://github.com/Chasing66)
+> This docker tutorial and docker image are provided by [hossinasaadi](https://github.com/hossinasaadi)
 
 1. install docker
 
@@ -90,7 +131,7 @@ docker run -itd --network=host \
     -v $PWD/db/:/etc/x-ui/ \
     -v $PWD/cert/:/root/cert/ \
     --name x-ui --restart=unless-stopped \
-    enwaiax/x-ui:latest
+    hossinasaadi/x-ui:latest
 ```
 
 > Build your own image

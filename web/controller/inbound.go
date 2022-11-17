@@ -64,19 +64,16 @@ func (a *InboundController) getInbounds(c *gin.Context) {
 
 func (a *InboundController) showInbound(c *gin.Context) {
 	user := session.GetLoginUser(c)
-	type RequestUri struct {
-		Id int `uri:"id"`
-	}
-	var requestUri RequestUri
+	id, err := strconv.Atoi(c.Param("id"))
 
-	if err := c.ShouldBindUri(&requestUri); err != nil {
+	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
 			ErrorMessage: err.Error(),
 		})
 		return
 	}
 
-	inbound, err := a.inboundService.GetUserInbound(user.Id, requestUri.Id)
+	inbound, err := a.inboundService.GetUserInbound(user.Id, id)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, response.ErrorResponse{
@@ -118,7 +115,7 @@ func (a *InboundController) delInbound(c *gin.Context) {
 		return
 	}
 	err = a.inboundService.DelInbound(id)
-	jsonMsg(c, I18n(c, "delete"), err)
+	jsonMsgObj(c, I18n(c , "delete"), id, err)
 	if err == nil {
 		a.xrayService.SetToNeedRestart()
 	}
@@ -138,8 +135,8 @@ func (a *InboundController) updateInbound(c *gin.Context) {
 		jsonMsg(c, I18n(c, "pages.inbounds.revise"), err)
 		return
 	}
-	err = a.inboundService.UpdateInbound(inbound)
-	jsonMsg(c, I18n(c, "pages.inbounds.revise"), err)
+	inbound, err = a.inboundService.UpdateInbound(inbound)
+	jsonMsgObj(c, I18n(c , "pages.inbounds.revise"), inbound, err)
 	if err == nil {
 		a.xrayService.SetToNeedRestart()
 	}
