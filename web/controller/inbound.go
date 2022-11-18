@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
@@ -11,6 +12,7 @@ import (
 	"x-ui/database/model"
 	"x-ui/logger"
 	"x-ui/web/global"
+	requestBody "x-ui/web/request_body"
 	"x-ui/web/response"
 	"x-ui/web/service"
 	"x-ui/web/session"
@@ -94,8 +96,17 @@ func (a *InboundController) getInbound(c *gin.Context) {
 }
 
 func (a *InboundController) addInbound(c *gin.Context) {
-	inbound := &model.Inbound{}
-	err := c.ShouldBind(inbound)
+	body := &requestBody.StoreInboundRequestBody{}
+	err := c.ShouldBindJSON(body)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
+		return
+	}
+
+	inbound, err := inboundFromStoreInboundRequestBody(body)
+
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
 			ErrorMessage: err.Error(),
@@ -202,4 +213,38 @@ func (a *InboundController) clearClientIps(c *gin.Context) {
 		return
 	}
 	jsonMsg(c, "Log Cleared", nil)
+}
+
+func inboundFromStoreInboundRequestBody(body *requestBody.StoreInboundRequestBody) (*model.Inbound, error) {
+	result := model.Inbound{
+		Total:      body.Total,
+		Remark:     body.Remark,
+		Enable:     body.Enable,
+		ExpiryTime: body.ExpiryTime,
+		Listen:     body.Listen,
+		Port:       body.Port,
+		Protocol:   model.Protocol(body.Protocol),
+	}
+
+	decodedSettings, err := base64.StdEncoding.DecodeString(body.Settings)
+	if err != nil {
+		return nil, err
+	}
+	result.Settings = string(decodedSettings)
+
+	decodedStreamSettings, err := base64.StdEncoding.DecodeString(body.StreamSettings)
+	if err != nil {
+		return nil, err
+	}
+	result.StreamSettings = string(decodedStreamSettings)
+
+	decodedSniffing, err := base64.StdEncoding.DecodeString(body.Sniffing)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result.Sniffing = string(decodedSniffing)
+
+	return &result, nil
 }
