@@ -163,16 +163,23 @@ func (a *InboundController) updateInbound(c *gin.Context) {
 		return
 	}
 
-	inbound := &model.Inbound{
-		Id: id,
-	}
-	err = c.ShouldBind(inbound)
+	body := &requestBody.UpdateInboundRequestBody{}
+	err = c.ShouldBindJSON(body)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
 			ErrorMessage: err.Error(),
 		})
 		return
 	}
+
+	inbound, err := inboundFromUpdateInboundRequestBody(body)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
+		return
+	}
+	inbound.Id = id
 
 	inbound, err = a.inboundService.UpdateInbound(inbound)
 	if err != nil {
@@ -216,6 +223,40 @@ func (a *InboundController) clearClientIps(c *gin.Context) {
 }
 
 func inboundFromStoreInboundRequestBody(body *requestBody.StoreInboundRequestBody) (*model.Inbound, error) {
+	result := model.Inbound{
+		Total:      body.Total,
+		Remark:     body.Remark,
+		Enable:     body.Enable,
+		ExpiryTime: body.ExpiryTime,
+		Listen:     body.Listen,
+		Port:       body.Port,
+		Protocol:   model.Protocol(body.Protocol),
+	}
+
+	decodedSettings, err := base64.StdEncoding.DecodeString(body.Settings)
+	if err != nil {
+		return nil, err
+	}
+	result.Settings = string(decodedSettings)
+
+	decodedStreamSettings, err := base64.StdEncoding.DecodeString(body.StreamSettings)
+	if err != nil {
+		return nil, err
+	}
+	result.StreamSettings = string(decodedStreamSettings)
+
+	decodedSniffing, err := base64.StdEncoding.DecodeString(body.Sniffing)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result.Sniffing = string(decodedSniffing)
+
+	return &result, nil
+}
+
+func inboundFromUpdateInboundRequestBody(body *requestBody.UpdateInboundRequestBody) (*model.Inbound, error) {
 	result := model.Inbound{
 		Total:      body.Total,
 		Remark:     body.Remark,
