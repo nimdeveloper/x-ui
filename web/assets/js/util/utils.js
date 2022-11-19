@@ -28,6 +28,127 @@ class HttpUtil {
         }
     }
 
+    static _respNewApiToMsg(resp) {
+        const data = resp.data;
+        const status = resp.status;
+
+        if (200 <= status && status <= 299) {
+            if (data == null) {
+                return new Msg(true);
+            } else {
+                return new Msg(true, data?.message, data.data);
+            }
+        } else if (300 <= status && status <= 399) {
+            return new Msg(false, 'unknown data:', data);
+
+        } else if (400 <= status && status <= 499) {
+            return new Msg(false, 'bad request:', data.message);
+
+        } else if (500 <= status) {
+            return new Msg(false, 'server error:', data);
+
+        } else {
+            return new Msg(false, 'unknown data:', data);
+        }
+    }
+
+    static async newPost(url, data, options) {
+        let msg;
+        try {
+            const resp = await axios.post(url, data, options);
+            msg = this._respNewApiToMsg(resp);
+        } catch (e) {
+            msg = new Msg(false, e.toString());
+        }
+        this._handleMsg(msg);
+        return msg;
+    }
+    static async newPostWithModal(url, data, modal,options) {
+        if (modal) {
+            modal.loading(true);
+        }
+        const msg = await this.newPost(url,data,options);
+        if (modal) {
+            modal.loading(false);
+            if (msg instanceof Msg && msg.success) {
+                modal.close();
+            }
+        }
+        return msg;
+    }
+    static async newGet(url, data, options) {
+        let msg;
+        try {
+            const resp = await axios.get(url, data, options);
+            msg = this._respNewApiToMsg(resp);
+        } catch (e) {
+            msg = new Msg(false, e.toString());
+        }
+        this._handleMsg(msg);
+        return msg;
+    }
+    static async newGetWithModal(url, data, modal,options) {
+        if (modal) {
+            modal.loading(true);
+        }
+        const msg = await this.newGet(url,data,options);
+        if (modal) {
+            modal.loading(false);
+            if (msg instanceof Msg && msg.success) {
+                modal.close();
+            }
+        }
+        return msg;
+    }
+    static async newPut(url, data, options) {
+        let msg;
+        try {
+            const resp = await axios.put(url, data, options);
+            msg = this._respNewApiToMsg(resp);
+        } catch (e) {
+            msg = new Msg(false, e.toString());
+        }
+        this._handleMsg(msg);
+        return msg;
+    }
+    static async newPutWithModal(url, data, modal,options) {
+        if (modal) {
+            modal.loading(true);
+        }
+        const msg = await this.newPut(url,data,options);
+        if (modal) {
+            modal.loading(false);
+            if (msg instanceof Msg && msg.success) {
+                modal.close();
+            }
+        }
+        return msg;
+    }
+    static async newDelete(url, data, options) {
+        let msg;
+        try {
+            const resp = await axios.delete(url, data, options);
+            msg = this._respNewApiToMsg(resp);
+        } catch (e) {
+            msg = new Msg(false, e.toString());
+        }
+        this._handleMsg(msg);
+        return msg;
+    }
+    static async newDeleteWithModal(url, data, modal,options) {
+        if (modal) {
+            modal.loading(true);
+        }
+        const msg = await this.newDelete(url,data,options);
+        if (modal) {
+            modal.loading(false);
+            if (msg instanceof Msg && msg.success) {
+                modal.close();
+            }
+        }
+        return msg;
+    }
+
     static async get(url, data, options) {
         let msg;
         try {
