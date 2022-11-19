@@ -337,7 +337,6 @@
             },
             switchEnable(dbInbound) {
 
-                console.log(dbInbound)
                 this.submit(`/xui/api/inbounds/${dbInbound.id}`, {
                     ...dbInbound,
                     settings: btoa(dbInbound.settings.toString()),

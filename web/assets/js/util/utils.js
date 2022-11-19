@@ -17,7 +17,6 @@ class HttpUtil {
 
         const status = e.response.status;
         const data = e.response.data;
-        console.log('eafaffaf',data.error)
 
         if (300 <= status && status <= 399) {
            return  new Msg(false, 'unknown data:'+ data.error.toString());
