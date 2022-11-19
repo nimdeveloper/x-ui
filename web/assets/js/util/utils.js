@@ -52,11 +52,11 @@ class HttpUtil {
         return msg;
     }
 
-    static async postWithModal(url, data, modal) {
+    static async postWithModal(url, data, modal,options) {
         if (modal) {
             modal.loading(true);
         }
-        const msg = await this.post(url, data);
+        const msg = await this.post(url,data,options);
         if (modal) {
             modal.loading(false);
             if (msg instanceof Msg && msg.success) {
