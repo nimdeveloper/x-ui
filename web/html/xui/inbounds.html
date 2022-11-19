@@ -276,13 +276,13 @@
                     total: dbInbound.total,
                     remark: dbInbound.remark,
                     enable: dbInbound.enable,
-                    expiryTime: dbInbound.expiryTime,
+                    expiry_time: dbInbound.expiryTime,
 
                     listen: inbound.listen,
                     port: inbound.port,
                     protocol: inbound.protocol,
                     settings: btoa(inbound.settings.toString()),
-                    streamSettings: btoa(inbound.stream.toString()),
+                    stream_settings: btoa(inbound.stream.toString()),
                     sniffing: btoa(inbound.canSniffing() ? inbound.sniffing.toString() : '{}'),
                 };
                 await this.submit('/xui/api/inbounds', data, inModal);
@@ -294,13 +294,13 @@
                     total: dbInbound.total,
                     remark: dbInbound.remark,
                     enable: dbInbound.enable,
-                    expiryTime: dbInbound.expiryTime,
+                    expiry_time: dbInbound.expiryTime,
 
                     listen: inbound.listen,
                     port: inbound.port,
                     protocol: inbound.protocol,
                     settings: btoa(inbound.settings.toString()),
-                    streamSettings: btoa(inbound.stream.toString()),
+                    stream_settings: btoa(inbound.stream.toString()),
                     sniffing: inbound.canSniffing() ? btoa(inbound.sniffing.toString()) : btoa('{}'),
                 };
                 await this.submit(`/xui/api/inbounds/${dbInbound.id}`, data, inModal, "put");
@@ -341,7 +341,7 @@
                 this.submit(`/xui/api/inbounds/${dbInbound.id}`, {
                     ...dbInbound,
                     settings: btoa(dbInbound.settings.toString()),
-                    streamSettings: btoa(dbInbound.streamSettings.toString()),
+                    stream_settings: btoa(dbInbound.stream_settings.toString()),
                     sniffing: btoa(dbInbound.sniffing.toString()),
                 }, undefined, "put");
             },
