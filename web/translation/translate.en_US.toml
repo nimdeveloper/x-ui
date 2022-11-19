@@ -58,7 +58,7 @@
 "emptyUsername" = "please Enter Username"
 "emptyPassword" = "please Enter Password"
 "wrongUsernameOrPassword" = "invalid username or password"
-"successLogin" = "Login"
+"successLogin" = "Logged in successfully"
 
 
 [pages.index]

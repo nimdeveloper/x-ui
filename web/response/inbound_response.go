@@ -1,6 +1,10 @@
 package response
 
-import "x-ui/database/model"
+import (
+	"github.com/samber/lo"
+	"x-ui/database/model"
+	"x-ui/xray"
+)
 
 type ProtocolResponse string
 
@@ -14,24 +18,28 @@ const (
 )
 
 type InboundResponse struct {
-	Id             int              `json:"id"`
-	UserId         int              `json:"user_Id"`
-	Up             int64            `json:"up"`
-	Down           int64            `json:"down"`
-	Total          int64            `json:"total"`
-	Remark         string           `json:"remark"`
-	Enable         bool             `json:"enable"`
-	ExpiryTime     int64            `json:"expiry_time"`
-	Listen         string           `json:"listen"`
-	Port           int              `json:"port"`
-	Protocol       ProtocolResponse `json:"protocol"`
-	Settings       string           `json:"settings"`
-	StreamSettings string           `json:"stream_settings"`
-	Tag            string           `json:"tag"`
-	Sniffing       string           `json:"sniffing"`
+	Id             int                      `json:"id"`
+	UserId         int                      `json:"user_Id"`
+	Up             int64                    `json:"up"`
+	Down           int64                    `json:"down"`
+	Total          int64                    `json:"total"`
+	Remark         string                   `json:"remark"`
+	Enable         bool                     `json:"enable"`
+	ExpiryTime     int64                    `json:"expiry_time"`
+	Listen         string                   `json:"listen"`
+	Port           int                      `json:"port"`
+	Protocol       ProtocolResponse         `json:"protocol"`
+	Settings       string                   `json:"settings"`
+	StreamSettings string                   `json:"stream_settings"`
+	Tag            string                   `json:"tag"`
+	Sniffing       string                   `json:"sniffing"`
+	ClientTraffics []*ClientTrafficResponse `json:"client_statistics"`
 }
 
 func InboundResponseFromInbound(inbound model.Inbound) *InboundResponse {
+	clientStatistics := lo.Map[xray.ClientTraffic, *ClientTrafficResponse](inbound.ClientStats, func(item xray.ClientTraffic, _ int) *ClientTrafficResponse {
+		return ClientTrafficResponseFromClientTraffic(&item)
+	})
 	return &InboundResponse{
 		Id:             inbound.Id,
 		UserId:         inbound.UserId,
@@ -48,6 +56,7 @@ func InboundResponseFromInbound(inbound model.Inbound) *InboundResponse {
 		StreamSettings: inbound.StreamSettings,
 		Tag:            inbound.Tag,
 		Sniffing:       inbound.Sniffing,
+		ClientTraffics: clientStatistics,
 	}
 }
 
