@@ -63,7 +63,7 @@
             },
             async getMirrors() {
                 this.loading();
-                const msg = await HttpUtil.get('/api/mirrors');
+                const msg = await HttpUtil.get('/xui/api/mirrors');
                 this.loading(false);
                 if (msg.status !== 200) {
                     return;
@@ -96,7 +96,7 @@
                     ip: mirror.ip.toString(),
                     port: parseInt(mirror.port)
                 })
-                await this.submit('/api/mirrors', data, mirrorModal);
+                await this.submit('/xui/api/mirrors', data, mirrorModal);
 
             },
             async submit(url, data, modal) {
