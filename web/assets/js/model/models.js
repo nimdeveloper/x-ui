@@ -131,7 +131,7 @@ class DBInbound {
             listen: this.listen,
             protocol: this.protocol,
             settings: settings,
-            stream_settings: streamSettings,
+            streamSettings: streamSettings,
             tag: this.tag,
             sniffing: sniffing,
             clientStats: this.clientStats,

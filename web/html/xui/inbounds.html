@@ -107,13 +107,13 @@
                             <template slot="enable" slot-scope="text, dbInbound">
                                 <a-switch v-model="dbInbound.enable" @change="switchEnable(dbInbound)"></a-switch>
                             </template>
-                            <template slot="expiryTime" slot-scope="text, dbInbound">
-                                <template v-if="dbInbound.expiryTime > 0">
+                            <template slot="expiry_time" slot-scope="text, dbInbound">
+                                <template v-if="dbInbound.expiry_time > 0">
                                     <a-tag v-if="dbInbound.isExpiry" color="red">
-                                        [[ DateUtil.formatMillis(dbInbound.expiryTime) ]]
+                                        [[ DateUtil.formatMillis(dbInbound.expiry_time) ]]
                                     </a-tag>
                                     <a-tag v-else color="blue">
-                                        [[ DateUtil.formatMillis(dbInbound.expiryTime) ]]
+                                        [[ DateUtil.formatMillis(dbInbound.expiry_time) ]]
                                     </a-tag>
                                 </template>
                                 <a-tag v-else color="green">{{ i18n "indefinitely" }}</a-tag>
@@ -177,7 +177,7 @@
         title: '{{ i18n "pages.inbounds.expireDate" }}',
         align: 'center',
         width: 80,
-        scopedSlots: {customRender: 'expiryTime'},
+        scopedSlots: {customRender: 'expiry_time'},
     }];
 
     const app = new Vue({
@@ -208,6 +208,7 @@
                 this.dbInbounds.splice(0);
                 for (const inbound of dbInbounds) {
                     const dbInbound = new DBInbound(inbound);
+
                     this.inbounds.push(dbInbound.toInbound());
                     this.dbInbounds.push(dbInbound);
                 }
@@ -276,7 +277,7 @@
                     total: dbInbound.total,
                     remark: dbInbound.remark,
                     enable: dbInbound.enable,
-                    expiry_time: dbInbound.expiryTime,
+                    expiry_time: dbInbound.expiry_time,
 
                     listen: inbound.listen,
                     port: inbound.port,
@@ -294,7 +295,7 @@
                     total: dbInbound.total,
                     remark: dbInbound.remark,
                     enable: dbInbound.enable,
-                    expiry_time: dbInbound.expiryTime,
+                    expiry_time: dbInbound.expiry_time,
 
                     listen: inbound.listen,
                     port: inbound.port,
