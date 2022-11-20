@@ -8,7 +8,7 @@ type APIController struct {
 	BaseAPIController
 
 	inboundController *InboundController
-	settingController *SettingController
+	mirrorController  *MirrorController
 }
 
 func NewAPIController(g *gin.RouterGroup) *APIController {
@@ -22,4 +22,5 @@ func (a *APIController) initRouter(g *gin.RouterGroup) {
 	g.Use(a.checkLogin)
 
 	a.inboundController = NewInboundController(g)
+	a.mirrorController = NewStoreMirrorController(g)
 }

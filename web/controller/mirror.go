@@ -8,21 +8,40 @@ import (
 	"x-ui/web/service/mirror"
 )
 
-type MirrorStoreController struct {
+type MirrorController struct {
+	mirrorIndexService mirror.IndexService
 	storeMirrorService mirror.StoreService
 }
 
-func NewStoreMirrorController(g *gin.RouterGroup) *MirrorStoreController {
-	a := &MirrorStoreController{}
+func NewStoreMirrorController(g *gin.RouterGroup) *MirrorController {
+	a := &MirrorController{}
 	a.initRouter(g)
 	return a
 }
 
-func (a *MirrorStoreController) initRouter(g *gin.RouterGroup) {
-	g.POST("/api/mirrors", a.storeMirror)
+func (a *MirrorController) initRouter(g *gin.RouterGroup) {
+	g.GET("/mirrors", a.getAllMirrors)
+	g.POST("/mirrors", a.storeMirror)
+
 }
 
-func (a *MirrorStoreController) storeMirror(c *gin.Context) {
+func (a *MirrorController) getAllMirrors(c *gin.Context) {
+	mirrors, err := a.mirrorIndexService.GetMirrors()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": http.StatusOK,
+		"data":   mirrors,
+	})
+}
+
+func (a *MirrorController) storeMirror(c *gin.Context) {
 	var body requestBody.StoreMirrorRequestBody
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
