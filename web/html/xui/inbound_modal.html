@@ -85,13 +85,13 @@
                 switch (protocol) {
                     case Protocols.VMESS: return clients.push(new Inbound.VmessSettings.Vmess());
                     case Protocols.VLESS: return clients.push(new Inbound.VLESSSettings.VLESS());
+                    case Protocols.TROJAN: return clients.push(new Inbound.TrojanSettings.Client());
                     default: return null;
                 }
             },
             removeClient(index, clients) {
                 clients.splice(index, 1);
             },
-
             async getDBClientIps(email,event) {
 
                 const msg = await HttpUtil.post('/xui/inbound/clientIps/'+ email);

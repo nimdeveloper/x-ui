@@ -1,7 +1,7 @@
 {{define "form/vmess"}}
 <a-form layout="inline">
-<a-collapse activeKey="0"  v-for="(vmess, index) in inbound.settings.vmesses"
-:key="`vmess-${index}`">
+
+<a-collapse activeKey="0"  v-for="(vmess, index) in inbound.settings.vmesses" :key="`vmess-${index}`">
     <a-collapse-panel :header="getHeaderText(vmess.email)">
         <a-tag v-if="isExpiry(index) || ((getUpStats(vmess.email) + getDownStats(vmess.email)) > vmess.totalGB && vmess.totalGB != 0)" color="red" style="margin-bottom: 10px;display: block;text-align: center;">Account is (Expired|Traffic Ended) And Disabled</a-tag>
 
@@ -33,8 +33,7 @@
                     </a-tooltip>
                 </span>
                 
-                <a-textarea readonly @click="getDBClientIps(vmess.email,$event)" placeholder="Click To Get IPs"  :auto-size="{ minRows: 0.5, maxRows: 10 }">
-                </a-textarea>
+                <a-textarea readonly @click="getDBClientIps(vmess.email,$event)" placeholder="Click To Get IPs"  :auto-size="{ minRows: 0.5, maxRows: 10 }"></a-textarea>
 
                 <a-button type="danger" @click="clearDBClientIps(vmess.email,$event)" >clear log</a-button>
             </a-form-item>
@@ -86,8 +85,7 @@
                 viewBox="0 0 24 24"
                 width="24"
                 height="24"
-                class="ml-2 cursor-pointer"
-                >
+                class="ml-2 cursor-pointer">
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path
                 fill="green"
@@ -114,7 +112,6 @@
             <!-- <a-divider style="height: 2px; background-color: #7e7e7e" /> -->
     
     </a-collapse-panel>
-
 </a-collapse>
 
     
