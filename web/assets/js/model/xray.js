@@ -45,6 +45,11 @@ const FLOW_CONTROL = {
     DIRECT: "xtls-rprx-direct",
 };
 
+ const env={
+    WEBSOCKET_PORT:80,
+    GRPC_PORT:80
+}
+
 Object.freeze(Protocols);
 Object.freeze(VmessMethods);
 Object.freeze(SSMethods);
@@ -927,7 +932,9 @@ class Inbound extends XrayCommonClass {
             path = kcp.seed;
         } else if (network === 'ws') {
             let ws = this.stream.ws;
-            path = ws.path;
+            path = ws.path + this.port;
+            console.log('path',path)
+            this.port = env.WEBSOCKET_PORT;
             let index = ws.headers.findIndex(header => header.name.toLowerCase() === 'host');
             if (index >= 0) {
                 host = ws.headers[index].value;
@@ -941,7 +948,8 @@ class Inbound extends XrayCommonClass {
             host = this.stream.quic.security;
             path = this.stream.quic.key;
         } else if (network === 'grpc') {
-            path = this.stream.grpc.serviceName;
+            path = this.stream.grpc.serviceName + '/grpc-' + this.port;
+            this.port = env.GRPC_PORT;
         }
 
         if (this.stream.security === 'tls') {
@@ -998,7 +1006,9 @@ class Inbound extends XrayCommonClass {
                 break;
             case "ws":
                 const ws = this.stream.ws;
-                params.set("path", ws.path);
+                const p = ws.path + this.port;
+                this.port = env.WEBSOCKET_PORT;
+                params.set("path", p);
                 const index = ws.headers.findIndex(header => header.name.toLowerCase() === 'host');
                 if (index >= 0) {
                     const host = ws.headers[index].value;
@@ -1018,7 +1028,8 @@ class Inbound extends XrayCommonClass {
                 break;
             case "grpc":
                 const grpc = this.stream.grpc;
-                params.set("serviceName", grpc.serviceName);
+                params.set("serviceName", grpc.serviceName + '/grpc-' + this.port);
+                this.port = env.GRPC_PORT;
                 break;
         }
 
@@ -1052,13 +1063,12 @@ class Inbound extends XrayCommonClass {
             + '#' + encodeURIComponent(remark);
     }
 
-    genTrojanLink(address = '', remark = '',clientIndex = 0) {
+    genTrojanLink(address = '', remark = '', clientIndex = 0) {
         let settings = this.settings;
         return `trojan://${settings.clients[clientIndex].password}@${address}:${this.port}#${encodeURIComponent(remark)}`;
     }
 
     genLink(address = '', remark = '', clientIndex = 0) {
-        console.log('ccccccccccccccccc',clientIndex)
         switch (this.protocol) {
             case Protocols.VMESS:
                 return this.genVmessLink(address, remark, clientIndex);
@@ -1067,7 +1077,7 @@ class Inbound extends XrayCommonClass {
             case Protocols.SHADOWSOCKS:
                 return this.genSSLink(address, remark);
             case Protocols.TROJAN:
-                return this.genTrojanLink(address, remark,clientIndex);
+                return this.genTrojanLink(address, remark, clientIndex);
             default:
                 return '';
         }
@@ -1411,7 +1421,7 @@ Inbound.TrojanSettings = class extends Inbound.Settings {
 };
 Inbound.TrojanSettings.Client = class extends XrayCommonClass {
 
-    constructor(id = RandomUtil.randomUUID(), flow = FLOW_CONTROL.DIRECT, email = '', limitIp = 0, totalGB = 0, expiryTime = '',password = RandomUtil.randomSeq(10)) {
+    constructor(id = RandomUtil.randomUUID(), flow = FLOW_CONTROL.DIRECT, email = '', limitIp = 0, totalGB = 0, expiryTime = '', password = RandomUtil.randomSeq(10)) {
         super();
         this.id = id;
         this.flow = flow;
@@ -1419,7 +1429,7 @@ Inbound.TrojanSettings.Client = class extends XrayCommonClass {
         this.limitIp = limitIp;
         this.totalGB = totalGB;
         this.expiryTime = expiryTime;
-        this.password=password
+        this.password = password
 
     }
 
