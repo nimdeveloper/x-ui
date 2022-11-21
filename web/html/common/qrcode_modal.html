@@ -23,7 +23,7 @@
     </a-tag>
 
 
-    <canvas v-if="qrModal.inbound.protocol != Protocols.VMESS && qrModal.inbound.protocol != Protocols.VLESS"
+    <canvas v-if="qrModal.inbound.protocol != Protocols.VMESS && qrModal.inbound.protocol != Protocols.VLESS && qrModal.inbound.protocol != Protocols.TROJAN"
             id="qrCode" style="width: 100%; height: 100%;"></canvas>
 
     <template v-if="qrModal.inbound.protocol === Protocols.VMESS"
