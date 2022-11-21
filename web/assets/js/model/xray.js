@@ -45,10 +45,6 @@ const FLOW_CONTROL = {
     DIRECT: "xtls-rprx-direct",
 };
 
- const env={
-    WEBSOCKET_PORT:80,
-    GRPC_PORT:80
-}
 
 Object.freeze(Protocols);
 Object.freeze(VmessMethods);
@@ -932,9 +928,7 @@ class Inbound extends XrayCommonClass {
             path = kcp.seed;
         } else if (network === 'ws') {
             let ws = this.stream.ws;
-            path = ws.path + this.port;
-            console.log('path',path)
-            this.port = env.WEBSOCKET_PORT;
+            path = ws.path;
             let index = ws.headers.findIndex(header => header.name.toLowerCase() === 'host');
             if (index >= 0) {
                 host = ws.headers[index].value;
@@ -948,8 +942,7 @@ class Inbound extends XrayCommonClass {
             host = this.stream.quic.security;
             path = this.stream.quic.key;
         } else if (network === 'grpc') {
-            path = this.stream.grpc.serviceName + '/grpc-' + this.port;
-            this.port = env.GRPC_PORT;
+            path = this.stream.grpc.serviceName;
         }
 
         if (this.stream.security === 'tls') {
@@ -1006,8 +999,7 @@ class Inbound extends XrayCommonClass {
                 break;
             case "ws":
                 const ws = this.stream.ws;
-                const p = ws.path + this.port;
-                this.port = env.WEBSOCKET_PORT;
+                const p = ws.path ;
                 params.set("path", p);
                 const index = ws.headers.findIndex(header => header.name.toLowerCase() === 'host');
                 if (index >= 0) {
@@ -1028,8 +1020,7 @@ class Inbound extends XrayCommonClass {
                 break;
             case "grpc":
                 const grpc = this.stream.grpc;
-                params.set("serviceName", grpc.serviceName + '/grpc-' + this.port);
-                this.port = env.GRPC_PORT;
+                params.set("serviceName", grpc.serviceName);
                 break;
         }
 
