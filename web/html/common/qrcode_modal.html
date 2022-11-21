@@ -162,7 +162,6 @@
                     case Protocols.TROJAN:
                          const clients = qrModal.inbound.settings.clients
                         for (const index in clients) {
-                            console.log('sfdgd',clients[index].id)
                             this.setQrCode("qrCode-trojan-" + clients[index].id, index)
                         }
                         break;

@@ -208,8 +208,6 @@
                 this.dbInbounds.splice(0);
                 for (const inbound of dbInbounds) {
                     const dbInbound = new DBInbound(inbound);
-                    console.log(dbInbound.toInbound())
-
                     this.inbounds.push(dbInbound.toInbound());
                     this.dbInbounds.push(dbInbound);
                 }
