@@ -43,6 +43,15 @@
                 style="width: 100%; height: 100%;"></canvas>
         <a-divider style="height: 2px; background-color: #7e7e7e"/>
     </template>
+    <template v-if="qrModal.inbound.protocol === Protocols.TROJAN"
+              v-for="(client, index) in qrModal.inbound.settings.clients">
+        <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;" v-text="client.email"></a-tag>
+        <a-tag color="red" style="margin-bottom: 10px;display: block;text-align: center;" v-text="client.id"></a-tag>
+
+        <canvas @click="copyTextToClipboard(`qrCode-trojan-${client.id}`,index)" :id="`qrCode-trojan-${client.id}`"
+                style="width: 100%; height: 100%;"></canvas>
+        <a-divider style="height: 2px; background-color: #7e7e7e"/>
+    </template>
 </a-modal>
 
 <script>
@@ -150,6 +159,13 @@
                             this.setQrCode("qrCode-vless-" + vlesses[index].id, index)
                         }
                         break;
+                    case Protocols.TROJAN:
+                         const clients = qrModal.inbound.settings.clients
+                        for (const index in clients) {
+                            console.log('sfdgd',clients[index].id)
+                            this.setQrCode("qrCode-trojan-" + clients[index].id, index)
+                        }
+                        break;
                     default:
                         return null;
                 }
@@ -183,6 +199,14 @@
                         this.setQrCode("qrCode-vless-" + vlesses[index].id, index)
                     }
                     break;
+
+                case Protocols.TROJAN:
+                    const clients = qrModal.inbound.settings.clients
+                    for (const index in clients) {
+                        this.setQrCode("qrCode-trojan-" + clients[index].id, index)
+                    }
+                    break;
+
                 default:
                     return null;
             }
