@@ -258,6 +258,7 @@ func (s *InboundService) AddTraffic(traffics []*xray.Traffic) (err error) {
 	}
 	return
 }
+
 func (s *InboundService) AddClientTraffic(traffics []*xray.ClientTraffic) (err error) {
 	if len(traffics) == 0 {
 		return nil
@@ -335,6 +336,7 @@ func (s *InboundService) DisableInvalidInbounds() (int64, error) {
 	count := result.RowsAffected
 	return count, err
 }
+
 func (s *InboundService) DisableInvalidClients() (int64, error) {
 	db := database.GetDB()
 	now := time.Now().Unix() * 1000
@@ -345,6 +347,7 @@ func (s *InboundService) DisableInvalidClients() (int64, error) {
 	count := result.RowsAffected
 	return count, err
 }
+
 func (s *InboundService) UpdateClientStat(inboundId int, inboundSettings string) error {
 	db := database.GetDB()
 
@@ -375,6 +378,7 @@ func (s *InboundService) UpdateClientStat(inboundId int, inboundSettings string)
 	}
 	return nil
 }
+
 func (s *InboundService) DelClientStat(tx *gorm.DB, email string) error {
 	return tx.Where("email = ?", email).Delete(xray.ClientTraffic{}).Error
 }
@@ -388,6 +392,7 @@ func (s *InboundService) GetInboundClientIps(clientEmail string) (string, error)
 	}
 	return InboundClientIps.Ips, nil
 }
+
 func (s *InboundService) ClearClientIps(clientEmail string) error {
 	db := database.GetDB()
 
@@ -396,12 +401,10 @@ func (s *InboundService) ClearClientIps(clientEmail string) error {
 		Update("ips", "")
 	err := result.Error
 
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
-func (s *InboundService) ResetClientTraffic(clientEmail string) (error) {
+
+func (s *InboundService) ResetClientTraffic(clientEmail string) error {
 	db := database.GetDB()
 
 	result := db.Model(xray.ClientTraffic{}).
@@ -409,11 +412,5 @@ func (s *InboundService) ResetClientTraffic(clientEmail string) (error) {
 		Update("up", 0).
 		Update("down", 0)
 
-	err := result.Error
-
-
-	if err != nil {
-		return err
-	}
-	return nil
+	return result.Error
 }

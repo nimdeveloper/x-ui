@@ -42,8 +42,6 @@ func (a *InboundController) initRouter(g *gin.RouterGroup) {
 	g.POST("/clientIps/:email", a.getClientIps)
 	g.POST("/clearClientIps/:email", a.clearClientIps)
 	g.POST("/resetClientTraffic/:email", a.resetClientTraffic)
-
-
 }
 
 func (a *InboundController) startTask() {
@@ -297,8 +295,10 @@ func (a *InboundController) resetClientTraffic(c *gin.Context) {
 
 	err := a.inboundService.ResetClientTraffic(email)
 	if err != nil {
-		jsonMsg(c, "something worng!", err)
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
 		return
 	}
-	jsonMsg(c, "traffic reseted", nil)
+	c.JSON(http.StatusOK, response.SuccessResponse{SuccessMessage: "Traffic has been reset"})
 }
