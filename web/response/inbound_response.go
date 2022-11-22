@@ -36,7 +36,7 @@ type InboundResponse struct {
 	ClientTraffics []*ClientTrafficResponse `json:"client_statistics"`
 }
 
-func InboundResponseFromInbound(inbound model.Inbound) *InboundResponse {
+func InboundResponseFromInbound(inbound *model.Inbound) *InboundResponse {
 	clientStatistics := lo.Map[xray.ClientTraffic, *ClientTrafficResponse](inbound.ClientStats, func(item xray.ClientTraffic, _ int) *ClientTrafficResponse {
 		return ClientTrafficResponseFromClientTraffic(&item)
 	})
