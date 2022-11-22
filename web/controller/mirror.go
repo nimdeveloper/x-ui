@@ -67,5 +67,5 @@ func (a *MirrorController) storeMirror(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.MirrorResponseFromMirrorModel(&m))
+	c.JSON(http.StatusCreated, response.MirrorResponseFromMirrorModel(&m))
 }
