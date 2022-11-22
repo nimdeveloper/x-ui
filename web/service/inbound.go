@@ -60,6 +60,64 @@ func (s *InboundService) checkPortExist(port int, ignoreId int) (bool, error) {
 	return count > 0, nil
 }
 
+func (s *InboundService) getClients(inbound *model.Inbound) ([]model.Client, error) {
+	settings := map[string][]model.Client{}
+	json.Unmarshal([]byte(inbound.Settings), &settings)
+	if settings == nil {
+		return nil, fmt.Errorf("Setting is null")
+	}
+
+	clients := settings["clients"]
+	if clients == nil {
+		return nil, nil
+	}
+	return clients, nil
+}
+
+func (s *InboundService) checkEmailsExist(emails map[string]bool, ignoreId int) (string, error) {
+	db := database.GetDB()
+	var inbounds []*model.Inbound
+	db = db.Model(model.Inbound{}).Where("Protocol in ?", []model.Protocol{model.VMess, model.VLESS})
+	if ignoreId > 0 {
+		db = db.Where("id != ?", ignoreId)
+	}
+	db = db.Find(&inbounds)
+	if db.Error != nil {
+		return "", db.Error
+	}
+
+	for _, inbound := range inbounds {
+		clients, err := s.getClients(inbound)
+		if err != nil {
+			return "", err
+		}
+
+		for _, client := range clients {
+			if emails[client.Email] {
+				return client.Email, nil
+			}
+		}
+	}
+	return "", nil
+}
+
+func (s *InboundService) checkEmailExistForInbound(inbound *model.Inbound) (string, error) {
+	clients, err := s.getClients(inbound)
+	if err != nil {
+		return "", err
+	}
+	emails := make(map[string]bool)
+	for _, client := range clients {
+		if client.Email != "" {
+			if emails[client.Email] {
+				return client.Email, nil
+			}
+			emails[client.Email] = true
+		}
+	}
+	return s.checkEmailsExist(emails, inbound.Id)
+}
+
 func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, error) {
 	exist, err := s.checkPortExist(inbound.Port, 0)
 	if err != nil {
@@ -68,6 +126,15 @@ func (s *InboundService) AddInbound(inbound *model.Inbound) (*model.Inbound, err
 	if exist {
 		return inbound, errors.New("port is already taken")
 	}
+
+	existEmail, err := s.checkEmailExistForInbound(inbound)
+	if err != nil {
+		return inbound, err
+	}
+	if existEmail != "" {
+		return inbound, errors.New(fmt.Sprintf("Duplicate email: %s", existEmail))
+	}
+
 	db := database.GetDB()
 
 	err = db.Save(inbound).Error
@@ -131,6 +198,14 @@ func (s *InboundService) UpdateInbound(inbound *model.Inbound) (*model.Inbound, 
 	}
 	if exist {
 		return inbound, errors.New("port is already taken")
+	}
+
+	existEmail, err := s.checkEmailExistForInbound(inbound)
+	if err != nil {
+		return inbound, err
+	}
+	if existEmail != "" {
+		return inbound, errors.New(fmt.Sprintf("Duplicate email: %s", existEmail))
 	}
 
 	oldInbound, err := s.GetInbound(inbound.Id)
@@ -211,13 +286,13 @@ func (s *InboundService) AddClientTraffic(traffics []*xray.ClientTraffic) (err e
 	for _, traffic := range traffics {
 		inbound := &model.Inbound{}
 
-		err := txInbound.Where("settings like ?", "%" + traffic.Email + "%").First(inbound).Error
+		err := txInbound.Where("settings like ?", "%"+traffic.Email+"%").First(inbound).Error
 		traffic.InboundId = inbound.Id
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				// delete removed client record
 				clientErr := s.DelClientStat(tx, traffic.Email)
-				logger.Warning(err, traffic.Email,clientErr)
+				logger.Warning(err, traffic.Email, clientErr)
 
 			}
 			continue
