@@ -45,6 +45,7 @@ const FLOW_CONTROL = {
     DIRECT: "xtls-rprx-direct",
 };
 
+
 Object.freeze(Protocols);
 Object.freeze(VmessMethods);
 Object.freeze(SSMethods);
@@ -998,7 +999,8 @@ class Inbound extends XrayCommonClass {
                 break;
             case "ws":
                 const ws = this.stream.ws;
-                params.set("path", ws.path);
+                const p = ws.path ;
+                params.set("path", p);
                 const index = ws.headers.findIndex(header => header.name.toLowerCase() === 'host');
                 if (index >= 0) {
                     const host = ws.headers[index].value;
@@ -1052,13 +1054,12 @@ class Inbound extends XrayCommonClass {
             + '#' + encodeURIComponent(remark);
     }
 
-    genTrojanLink(address = '', remark = '',clientIndex = 0) {
+    genTrojanLink(address = '', remark = '', clientIndex = 0) {
         let settings = this.settings;
         return `trojan://${settings.clients[clientIndex].password}@${address}:${this.port}#${encodeURIComponent(remark)}`;
     }
 
     genLink(address = '', remark = '', clientIndex = 0) {
-        console.log('ccccccccccccccccc',clientIndex)
         switch (this.protocol) {
             case Protocols.VMESS:
                 return this.genVmessLink(address, remark, clientIndex);
@@ -1067,7 +1068,7 @@ class Inbound extends XrayCommonClass {
             case Protocols.SHADOWSOCKS:
                 return this.genSSLink(address, remark);
             case Protocols.TROJAN:
-                return this.genTrojanLink(address, remark,clientIndex);
+                return this.genTrojanLink(address, remark, clientIndex);
             default:
                 return '';
         }
@@ -1411,7 +1412,7 @@ Inbound.TrojanSettings = class extends Inbound.Settings {
 };
 Inbound.TrojanSettings.Client = class extends XrayCommonClass {
 
-    constructor(id = RandomUtil.randomUUID(), flow = FLOW_CONTROL.DIRECT, email = '', limitIp = 0, totalGB = 0, expiryTime = '',password = RandomUtil.randomSeq(10)) {
+    constructor(id = RandomUtil.randomUUID(), flow = FLOW_CONTROL.DIRECT, email = '', limitIp = 0, totalGB = 0, expiryTime = '', password = RandomUtil.randomSeq(10)) {
         super();
         this.id = id;
         this.flow = flow;
@@ -1419,7 +1420,7 @@ Inbound.TrojanSettings.Client = class extends XrayCommonClass {
         this.limitIp = limitIp;
         this.totalGB = totalGB;
         this.expiryTime = expiryTime;
-        this.password=password
+        this.password = password
 
     }
 
