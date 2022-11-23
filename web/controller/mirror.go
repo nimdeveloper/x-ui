@@ -2,9 +2,11 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 	"net/http"
 	"x-ui/database/model"
 	requestBody "x-ui/web/request_body"
+	"x-ui/web/response"
 	"x-ui/web/service/mirror"
 )
 
@@ -35,9 +37,11 @@ func (a *MirrorController) getAllMirrors(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"status": http.StatusOK,
-		"data":   mirrors,
+
+	c.JSON(http.StatusOK, response.ListResponse[response.MirrorResponse]{
+		Data: lo.Map(mirrors, func(item *model.Mirror, _ int) *response.MirrorResponse {
+			return response.MirrorResponseFromMirrorModel(item)
+		}),
 	})
 }
 
@@ -63,8 +67,5 @@ func (a *MirrorController) storeMirror(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": http.StatusOK,
-		"data":   m,
-	})
+	c.JSON(http.StatusCreated, response.MirrorResponseFromMirrorModel(&m))
 }

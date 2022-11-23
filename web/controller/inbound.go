@@ -68,7 +68,7 @@ func (a *InboundController) getInbounds(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.ListResponse[response.InboundResponse]{
 		Data: lo.Map[*model.Inbound, *response.InboundResponse](inbounds, func(item *model.Inbound, _ int) *response.InboundResponse {
-			return response.InboundResponseFromInbound(*item)
+			return response.InboundResponseFromInbound(item)
 		}),
 	})
 }
@@ -92,7 +92,7 @@ func (a *InboundController) getInbound(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, response.InboundResponseFromInbound(*inbound))
+	c.JSON(http.StatusOK, response.InboundResponseFromInbound(inbound))
 }
 
 func (a *InboundController) addInbound(c *gin.Context) {
@@ -127,7 +127,7 @@ func (a *InboundController) addInbound(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.InboundResponseFromInbound(*inbound))
+	c.JSON(http.StatusCreated, response.InboundResponseFromInbound(inbound))
 	a.xrayService.SetToNeedRestart()
 }
 
@@ -196,7 +196,7 @@ func (a *InboundController) updateInbound(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.InboundResponseFromInbound(*inbound))
+	c.JSON(http.StatusOK, response.InboundResponseFromInbound(inbound))
 	a.xrayService.SetToNeedRestart()
 }
 

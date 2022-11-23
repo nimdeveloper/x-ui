@@ -246,6 +246,81 @@
 					}
 				]
 			}
+		},
+		"/xui/api/mirrors": {
+			"get": {
+				"tags": [
+					"Mirror"
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ListResponse"
+										},
+										{
+											"properties": {
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/MirrorResponse"
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						},
+						"description": "list of inbounds"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthenticated"
+					}
+				},
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				]
+			},
+			"post": {
+				"tags": [
+					"Mirror"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateMirrorRequestBody"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MirrorResponse"
+								}
+							}
+						},
+						"description": ""
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthenticated"
+					}
+				},
+				"security": [
+					{
+						"cookieAuth": []
+					}
+				]
+			}
 		}
 	},
 	"components": {
@@ -409,6 +484,29 @@
 					"total"
 				]
 			},
+			"MirrorResponse": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"nullable": false
+					},
+					"ip": {
+						"type": "string",
+						"nullable": false,
+						"format": "ip"
+					},
+					"port": {
+						"type": "integer",
+						"nullable": false
+					}
+				},
+				"required": [
+					"id",
+					"ip",
+					"port"
+				]
+			},
 			"Message": {
 				"type": "object",
 				"properties": {
@@ -565,6 +663,24 @@
 				"required": [
 					"username",
 					"password"
+				]
+			},
+			"CreateMirrorRequestBody": {
+				"type": "object",
+				"properties": {
+					"ip": {
+						"type": "string",
+						"nullable": false,
+						"format": "ip"
+					},
+					"port": {
+						"type": "integer",
+						"nullable": false
+					}
+				},
+				"required": [
+					"ip",
+					"port"
 				]
 			}
 		},
