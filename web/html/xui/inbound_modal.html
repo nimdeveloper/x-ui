@@ -110,14 +110,14 @@
 
             },
             async clearDBClientIps(email,event) {
-                const msg = await HttpUtil.post('/xui/inbound/clearClientIps/'+ email);
+                const msg = await HttpUtil.newPost('/xui/inbound/clearClientIps/'+ email);
                 if (!msg.success) {
                     return;
                 }
                 event.target.value = ""
             },
             async resetClientTraffic(client,event) {
-                const msg = await HttpUtil.post('/xui/inbound/resetClientTraffic/'+ client.email);
+                const msg = await HttpUtil.newPost('/xui/inbound/resetClientTraffic/'+ client.email);
                 if (!msg.success) {
                     return;
                 }
