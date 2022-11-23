@@ -132,11 +132,11 @@
                 });
             },
             async getMirrors() {
-                const msg = await HttpUtil.get('/xui/api/mirrors');
-                if (msg.status !== 200) {
+                const msg = await HttpUtil.newGet('/xui/api/mirrors');
+                if (!msg.success) {
                     return;
                 }
-                this.setMirrors(msg.data);
+                this.setMirrors(msg.obj);
             },
             setMirrors(mirrors) {
                 for (const mirror of mirrors) {
