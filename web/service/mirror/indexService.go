@@ -13,7 +13,7 @@ func (s *IndexService) GetMirrors() ([]*model.Mirror, error) {
 	db := database.GetDB()
 	var mirrors []*model.Mirror
 	err := db.Model(model.Mirror{}).Find(&mirrors).Error
-	println(err)
+
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
