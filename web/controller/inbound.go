@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
-	_ "github.com/samber/lo"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
