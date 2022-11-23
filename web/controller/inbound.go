@@ -216,10 +216,12 @@ func (a *InboundController) clearClientIps(c *gin.Context) {
 
 	err := a.inboundService.ClearClientIps(email)
 	if err != nil {
-		jsonMsg(c, "修改", err)
+		c.JSON(http.StatusUnprocessableEntity, response.ErrorResponse{
+			ErrorMessage: err.Error(),
+		})
 		return
 	}
-	jsonMsg(c, "Log Cleared", nil)
+	c.JSON(http.StatusOK, response.SuccessResponse{SuccessMessage: "Log Cleared"})
 }
 
 func inboundFromStoreInboundRequestBody(body *requestBody.StoreInboundRequestBody) (*model.Inbound, error) {
