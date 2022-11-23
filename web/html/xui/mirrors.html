@@ -63,12 +63,12 @@
             },
             async getMirrors() {
                 this.loading();
-                const msg = await HttpUtil.get('/xui/api/mirrors');
+                const msg = await HttpUtil.newGet('/xui/api/mirrors');
                 this.loading(false);
-                if (msg.status !== 200) {
+                if (!msg.success) {
                     return;
                 }
-                this.setMirrors(msg.data);
+                this.setMirrors(msg.obj);
             },
             setMirrors(mirrors) {
                 for (const mirror of mirrors) {
@@ -100,8 +100,8 @@
 
             },
             async submit(url, data, modal) {
-                const msg = await HttpUtil.postWithModal(url, JSON.parse(JSON.stringify(data)), modal,{headers: {'Content-Type': 'application/json'}});
-                if (msg.status === 200) {
+                const msg = await HttpUtil.newPostWithModal(url, JSON.parse(JSON.stringify(data)), modal,{headers: {'Content-Type': 'application/json'}});
+                if (msg.success) {
                     await this.getMirrors();
                 }
             },
