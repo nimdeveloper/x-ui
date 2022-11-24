@@ -177,14 +177,12 @@
                     }
                 }
             },
-
             getHeaderText(email) {
                 if(email == "")
                     return "Add Client"
                 
                 return email + (this.isClientEnable(email) == true ? ' Active' : ' Deactive')
             },
-
             getNewEmail(client) {
                 var chars = 'abcdefghijklmnopqrstuvwxyz1234567890';
                 var string = '';

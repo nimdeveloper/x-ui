@@ -285,7 +285,7 @@
                     stream_settings: btoa(inbound.stream.toString()),
                     sniffing: btoa(inbound.canSniffing() ? inbound.sniffing.toString() : '{}'),
                 };
-                await this.submit('/xui/api/inbounds', data, inModal);
+                await this.submit('/xui/api/inbounds', data, inModal,"post","inbound added");
             },
             async updateInbound(inbound, dbInbound) {
                 const data = {
@@ -303,7 +303,7 @@
                     stream_settings: btoa(inbound.stream.toString()),
                     sniffing: inbound.canSniffing() ? btoa(inbound.sniffing.toString()) : btoa('{}'),
                 };
-                await this.submit(`/xui/api/inbounds/${dbInbound.id}`, data, inModal, "put");
+                await this.submit(`/xui/api/inbounds/${dbInbound.id}`, data, inModal, "put","inbound updated");
             },
             resetTraffic(dbInbound) {
                 this.$confirm({
@@ -325,7 +325,7 @@
                     content: '{{ i18n "pages.inbounds.deleteInboundContent"}}',
                     okText: '{{ i18n "delete"}}',
                     cancelText: '{{ i18n "cancel"}}',
-                    onOk: () => this.submit('/xui/api/inbounds/' + dbInbound.id, undefined, undefined, "delete"),
+                    onOk: () => this.submit('/xui/api/inbounds/' + dbInbound.id, undefined, undefined, "delete",'inbound deleted successfully'),
                 });
             },
             showQrcode(dbInbound) {
@@ -342,25 +342,25 @@
                     settings: btoa(dbInbound.settings.toString()),
                     stream_settings: btoa(dbInbound.stream_settings.toString()),
                     sniffing: btoa(dbInbound.sniffing.toString()),
-                }, undefined, "put");
+                }, undefined, "put","inbound updated");
             },
-            async submit(url, data, modal, method = 'post') {
+            async submit(url, data, modal, method = 'post',message) {
                 let msg;
                 switch (method) {
                     case "post":
-                        msg = await HttpUtil.newPostWithModal(url, data, modal);
+                        msg = await HttpUtil.newPostWithModal(url, data, modal,undefined,message);
                         break;
 
                     case "get":
-                        msg = await HttpUtil.newGetWithModal(url, data, modal);
+                        msg = await HttpUtil.newGetWithModal(url, data, modal,undefined,message);
                         break;
 
                     case "delete":
-                        msg = await HttpUtil.newDeleteWithModal(url, data, modal);
+                        msg = await HttpUtil.newDeleteWithModal(url, data, modal,undefined,message);
                         break;
 
                     case "put":
-                        msg = await HttpUtil.newPutWithModal(url, data, modal);
+                        msg = await HttpUtil.newPutWithModal(url, data, modal,undefined,message);
                         break;
 
                     default:
