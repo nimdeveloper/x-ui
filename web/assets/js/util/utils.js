@@ -52,8 +52,6 @@ class HttpUtil {
         const data = resp.data.data;
         const status = resp.status;
 
-        console.log("dssdsdsd",message)
-
         if (200 <= status && status <= 299) {
             if (data == null) {
                 return new Msg(true,message);
